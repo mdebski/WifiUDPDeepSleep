@@ -1,0 +1,15 @@
+[Unit]
+Description=Receiver for sensor data
+Documentation=https://github.com/mdebski/WifiUDPDeepSleep
+After=network-online.target
+
+[Service]
+User=pi
+Group=pi
+ExecStart=/usr/bin/sensors-recv.py
+KillMode=control-group
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+Alias=sensors-recv.service

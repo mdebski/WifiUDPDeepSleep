@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
 
+from __future__ import print_function
 import socket
 import struct
 from datetime import datetime, timedelta
@@ -8,6 +9,18 @@ from influxdb import InfluxDBClient
 
 REPLY_FMT = '4sIB'
 PROTOCOL_MAGIC = "tTp1"
+
+log_file = None
+
+def log(*args, **kw):
+    global log_file
+    if log_file is None:
+	log_file = open('/var/log/sensors-recv.log', 'a')
+    if 'file' not in kw:
+        kw['file'] = log_file
+    res = __builtins__.print(*args, **kw)
+    log_file.flush()
+    return res
 
 class Header(object):
     fmt = '4sIIB'
@@ -51,19 +64,19 @@ class Measurement(object):
 
 def parse_data(data):
     if len(data) < Header.len:
-        print "Message too short."
+        log("Message too short.")
         return False
     hdr = Header(data)
 
-    print hdr
+    log(hdr)
 
     if hdr.magic != PROTOCOL_MAGIC:
-        print "Bad magic"
+        log("Bad magic")
         return False
 
     if hdr.len + hdr.data_count * Measurement.len != len(data):
-        print "Bad packet length: expected %d + %d, got %d" % (hdr.len,
-                hdr.data_count*Measurement.len, len(data))
+        log("Bad packet length: expected %d + %d, got %d" % (hdr.len,
+                hdr.data_count*Measurement.len, len(data)))
         return False
 
     res = []
@@ -72,21 +85,23 @@ def parse_data(data):
         pos = hdr.len + i * Measurement.len
         measurement = Measurement(i, data[pos:])
         res.append(measurement)
-        print measurement
+        log(measurement)
 
     return hdr, res
 
 
 def main():
+  log("Starting...")
   client = InfluxDBClient('localhost', 8086, '', '', 'sensors')
   sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
   sock.bind(('0.0.0.0', 1234))
   last_ids = {}
   last_recv_time = {}
   while True:
+    log("Ready.")
     data, addr = sock.recvfrom(1024)
     recv_time = datetime.now()
-    print recv_time, len(data), data.encode('hex')
+    log(recv_time, len(data), data.encode('hex'))
 
     parsed = parse_data(data)
     if not parsed:
@@ -95,11 +110,11 @@ def main():
     hdr, res = parsed
 
     reply = hdr.make_reply()
-    print "Sending reply", addr, reply.encode('hex')
+    log("Sending reply", addr, reply.encode('hex'))
     sock.sendto(reply, addr)
 
     if hdr.id in last_ids:
-        print "Duplicate."
+        log("Duplicate.")
         continue
 
     last_ids[hdr.id] = recv_time
@@ -134,7 +149,7 @@ def main():
         })
     client.write_points(points)
     last_recv_time[addr[1]] = recv_time
-    print "Sent to DB."
+    log("Sent to DB.")
 
 if __name__ == "__main__":
     main()
