@@ -1,0 +1,37 @@
+#ifndef __config__h
+#define __config__h
+
+#include <ESP8266WiFi.h>
+#include "constants.h"
+
+const IPAddress LOCAL_IP(192, 168, 0, 10);
+const IPAddress SUBNET(255, 255, 255, 0);
+const IPAddress GATEWAY_IP(192, 168, 0, 1);
+const int LOCAL_PORT = 1232;
+
+const char WIFI_SSID[] = "Your wifi ssid";
+const char WIFI_PASS[] = "Your wifi password";
+const int REMOTE_PORT = 1234;
+const IPAddress REMOTE_IP(192, 168, 0, 4);
+const int MAX_DATA_COUNT = 80;
+const int RECV_LOOP_DELAY_MS = 10;
+const int RETRY_SEND_EVERY_N_LOOPS = 50;
+
+#if 0
+// Prod
+const int CYCLE_TIME_MS = 15 * S_TO_MS;
+const int SEND_EVERY = 60;
+const int MAX_WIFI_CONNECT_TIME_MS = 5000;
+const int MAX_AWAKE_TIME_MS = 6000;
+#define DISABLE_SERIAL
+
+#else
+// Dev
+const int CYCLE_TIME_MS = 5 * S_TO_MS;
+const int SEND_EVERY = 3;
+
+const int MAX_WIFI_CONNECT_TIME_MS = 4500;
+const int MAX_AWAKE_TIME_MS = 4500;
+#endif
+
+#endif
