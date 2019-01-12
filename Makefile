@@ -20,7 +20,8 @@
 
 #=== Default values not available in the Arduino configuration files
 
-UPLOAD_SPEED ?= 115200
+#UPLOAD_SPEED ?= 115200
+UPLOAD_SPEED ?= 74880
 ESP_ROOT ?= /home/mdebski/making/esp8266/esp8266-arduino
 FLASH_DEF = 4M
 

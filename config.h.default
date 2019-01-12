@@ -4,10 +4,12 @@
 #include <ESP8266WiFi.h>
 #include "constants.h"
 
+const int SENSOR_GPIO_NUM = 13;
+
 const IPAddress LOCAL_IP(192, 168, 0, 10);
 const IPAddress SUBNET(255, 255, 255, 0);
 const IPAddress GATEWAY_IP(192, 168, 0, 1);
-const int LOCAL_PORT = 1232;
+const int LOCAL_PORT = 10010;
 
 const char WIFI_SSID[] = "Your wifi ssid";
 const char WIFI_PASS[] = "Your wifi password";

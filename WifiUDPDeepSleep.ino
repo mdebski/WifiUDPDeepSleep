@@ -8,7 +8,6 @@
 #ifdef DISABLE_SERIAL
 #define Serial fakeSerial
 #endif
-const int SENSOR_GPIO_NUM = 4;
 
 OneWire oneWire(SENSOR_GPIO_NUM);
 DallasTemperature sensors(&oneWire);
